@@ -1,51 +1,43 @@
 const User =  require("../models/user");
 
 // GET /users
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.status(200).send(users))
-    .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: err.message });
-      }
-      if (err.name === "CastError") {
-        res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: err.message });
-    });
+    .then((users) => res.status(200).json(users))
+    .catch((err) => next(err));
 }
 
 
 // GET singular user /users/userID
-const getUser = (req, res) => {
+const getUser = (req, res, next) => {
   const { userId } = req.params;
 
   User.findById(userId)
     .orFail()
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(200).json(user))
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: err.message });
+      if (err.name === 'DocumentNotFoundError') {
+        return res.status(404).json({ message: 'User not found' });
       }
-      if (err.name === "CastError") {
-        res.status(400).send({ message: err.message });
+      if (err.name === 'CastError') {
+        return res.status(400).json({ message: 'Invalid user id' });
       }
-      return res.status(500).send({ message: err.message });
+      return next(err);
     });
 }
 
 
 // POST /users
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar } = req.body;
 
   User.create({ name, avatar })
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(201).json(user))
     .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(400).send({ message: err.message });
+      if (err.name === 'ValidationError') {
+        return res.status(400).json({ message: err.message });
       }
-      return res.status(500).send({ message: err.message });
+      return next(err);
     });
 }
 

@@ -4,6 +4,13 @@ const mainRouter = require('./routes/index');
 
 const logger = require('./utils/logger');
 
+process.on('unhandledRejection', (reason) => {
+  logger.error(`UNHANDLED REJECTION: ${reason?.stack || reason}`);
+});
+process.on('uncaughtException', (err) => {
+  logger.error(`UNCAUGHT EXCEPTION: ${err.stack || err}`);
+});
+
 const { PORT = 3001 } = process.env;
 const app = express();
 
