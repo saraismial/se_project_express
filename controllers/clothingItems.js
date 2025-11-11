@@ -3,17 +3,11 @@ const ClothingItem = require('../models/clothingItem');
 
 // CREATE /items
 const createItem = (req, res) => {
-  console.log(req);
-  console.log(req.body);
-
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
-    .then((item) => {
-      console.log(item);
-      res.status(201).send(item)
-    }).catch((err) => {
-      console.error(err);
+    .then((item) => res.status(201).send(item))
+    .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(400).send({ message: err.message });
       }
@@ -27,7 +21,13 @@ const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((err) => {
-      return res.status(500).send({ message: 'is this the error?', err });
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(404).send({ message: err.message });
+      }
+      if (err.name === "CastError") {
+        res.status(400).send({ message: err.message });
+      }
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -43,9 +43,11 @@ const updateItem = (req, res) => {
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(400).send({ message: err.message });
-      } else if (err.name === "DocumentNotFoundError") {
+      }
+      if (err.name === "DocumentNotFoundError") {
         return res.status(404).send({ message: err.message });
-      } else return res.status(500).send({ message: err.message });
+      }
+      return res.status(500).send({ message: err.message });
     });
 };
 
@@ -54,8 +56,6 @@ const updateItem = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  console.log(itemId);
-
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
     .then((item) => res.status(200).send({item}))
@@ -63,7 +63,8 @@ const deleteItem = (req, res) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res.status(404).send({ message: err.message });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res.status(400).send({ message: err.message });
       }
       return res.status(500).send({ message: err.message });
@@ -80,7 +81,8 @@ const likeItem = (req, res) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res.status(404).send({ message: err.message });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res.status(400).send({ message: err.message });
       }
       return res.status(500).send({ message: err.message });
@@ -97,7 +99,8 @@ const dislikeItem = (req, res) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res.status(404).send({ message: err.message });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res.status(400).send({ message: err.message });
       }
       return res.status(500).send({ message: err.message });
