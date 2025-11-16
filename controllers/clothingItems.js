@@ -1,6 +1,5 @@
 const ClothingItem = require('../models/clothingItem');
 
-
 // CREATE /items
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
@@ -15,15 +14,11 @@ const createItem = (req, res, next) => {
     });
 };
 
-
 // GET /items
 const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.status(200).json(items))
     .catch((err) => {
-      if (err.name === "CastError") {
-        res.status(400).json({ message: err.message });
-      }
       return next(err);
     });
 };
@@ -44,6 +39,9 @@ const updateItem = (req, res, next) => {
       if (err.name === "DocumentNotFoundError") {
         return res.status(404).json({ message: err.message });
       }
+      if (err.name === "CastError") {
+        return res.status(400).json({ message: err.message });
+      }
       return next(err);
     });
 };
@@ -53,11 +51,15 @@ const updateItem = (req, res, next) => {
 const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
 
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail()
-    .then((item) => res.status(200).json({item}))
+    .then((item) => {
+      if(!item.owner.equals(req.user._id)) {
+        return res.status(403).json({ message: 'You can only delete your own items.' });
+      }
+      return item.deleteOne().then(() => res.status(200).json(item));
+    })
     .catch((err) => {
-      console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res.status(404).json({ message: err.message });
       }

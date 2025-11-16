@@ -1,15 +1,14 @@
+const logger = require('./utils/logger');
+require('./utils/processHandlers');
+
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
+
 const mainRouter = require('./routes/index');
+const { createUser, login } = require('./controllers/users');
 
-const logger = require('./utils/logger');
-
-process.on('unhandledRejection', (reason) => {
-  logger.error(`UNHANDLED REJECTION: ${reason?.stack || reason}`);
-});
-process.on('uncaughtException', (err) => {
-  logger.error(`UNCAUGHT EXCEPTION: ${err.stack || err}`);
-});
+const auth = require('./middlewares/auth');
 
 const { PORT = 3001 } = process.env;
 const app = express();
@@ -22,12 +21,27 @@ mongoose
 
 // middleware to parse json body
 app.use(express.json());
+// enable cross origin resource sharing
+app.use(cors());
 
-app.use((req, res, next) => {
-  req.user = { _id: "69125c0087edaa917171bec5" };
-  next();
-});
+// public routes
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+// authentication
+app.use(auth);
 
 app.use("/", mainRouter);
+
+
+// central error handling
+app.use((err, req, res, next) => {
+  logger.error(err.stack || err);
+
+  const status = err.statusCode || 500;
+  const message = status === 500 ? 'Internal server error' : err.message;
+
+  res.status(status).send({ message });
+})
 
 app.listen(PORT, () => logger.info(`Server is running on port ${PORT}.`));
