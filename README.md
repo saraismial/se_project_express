@@ -1,9 +1,80 @@
-# WTWR (What to Wear?): Back End
-The back-end project is focused on creating a server for the WTWR application. You’ll gain a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization.
-## Running the Project
-`npm run start` — to launch the server 
+# WTWR (What to Wear?) – Backend API
+
+This backend powers the WTWR full-stack application, providing user authentication, clothing item management, and secure access to user-specific data. It is built with Node.js, Express, MongoDB, and JWT-based authentication.
+
+## Features
+
+### User Authentication
+
+- Register new users (`POST /signup`)
+- Log in existing users (`POST /signin`)
+- Protected routes using JWT (`Authorization: Bearer <token>`)
+
+### User Management
+
+- Get current user info (`GET /users/me`)
+- Update user profile (`PATCH /users/me`)
+
+### Clothing Items
+
+- Public: fetch all clothing items (`GET /items`)
+- Auth required:
+  - Add a clothing item (`POST /items`)
+  - Like or unlike an item (`PUT /items/:id/likes`, `DELETE /items/:id/likes`)
+  - Delete an item owned by the current user (`DELETE /items/:id`)
+
+### Security
+
+- Helmet for enhanced HTTP security
+- JWT for user authentication
+- Request validation using Celebrate/Joi
+- Centralized error handling middleware
+
+## Technology Stack
+
+- Node.js
+- Express
+- MongoDB with Mongoose
+- JSON Web Tokens (JWT)
+- Celebrate / Joi validation
+- Helmet and CORS
+
+## Getting Started
+
+`npm run start` — to launch the server
 
 `npm run dev` — to launch the server with the hot reload feature
 
-### Testing
-Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
+## API Endpoints
+
+### Authentication (Public)
+
+| Method | Endpoint | Description                    |
+| ------ | -------- | ------------------------------ |
+| POST   | /signup  | Register a new user            |
+| POST   | /signin  | Log in a user and return a JWT |
+
+### Users
+
+| Method | Endpoint  | Description                |
+| ------ | --------- | -------------------------- |
+| GET    | /users/me | Get the current user       |
+| PATCH  | /users/me | Update user name or avatar |
+
+### Clothing Items
+
+| Method | Endpoint         | Auth Required | Description              |
+| ------ | ---------------- | ------------- | ------------------------ |
+| GET    | /items           | No            | Fetch all items          |
+| POST   | /items           | Yes           | Add a new item           |
+| DELETE | /items/:id       | Yes           | Delete an owned item     |
+| PUT    | /items/:id/likes | Yes           | Like an item             |
+| DELETE | /items/:id/likes | Yes           | Remove like from an item |
+
+## Frontend Repository
+
+- **Frontend:** https://github.com/saraismial/se_project_express
+
+## Summary
+
+This backend provides a complete API for user management and clothing item operations in the WTWR application. With JWT authentication, request validation, and MongoDB integration, it supports secure and scalable interaction with the frontend.

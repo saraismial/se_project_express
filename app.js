@@ -6,6 +6,7 @@ require('./utils/processHandlers');
 
 const mainRouter = require('./routes/index');
 const { createUser, login } = require('./controllers/users');
+const { getItems } = require('./controllers/clothingItems');
 
 const auth = require('./middlewares/auth');
 
@@ -34,6 +35,9 @@ app.use((req, res, next) => {
 // public routes
 app.post('/signin', login);
 app.post('/signup', createUser);
+
+// anyone can see default items
+app.get('/items', getItems);
 
 // authentication
 app.use(auth);
