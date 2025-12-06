@@ -1,14 +1,24 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const { errors } = require('celebrate');
 const logger = require('./utils/logger');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+
+
 require('./utils/processHandlers');
+
+const { errorHandler } = require('./middlewares/error-handler');
 
 const mainRouter = require('./routes/index');
 const { createUser, login } = require('./controllers/users');
 const { getItems } = require('./controllers/clothingItems');
 
 const auth = require('./middlewares/auth');
+
+const { validateUserBody, validateLoginBody } = require('./middlewares/validation');
 
 const { PORT = 3001 } = process.env;
 const app = express();
@@ -33,8 +43,8 @@ app.use((req, res, next) => {
 });
 
 // public routes
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', validateLoginBody, login);
+app.post('/signup', validateUserBody, createUser);
 
 // anyone can see default items
 app.get('/items', getItems);
@@ -42,18 +52,16 @@ app.get('/items', getItems);
 // authentication
 app.use(auth);
 
+app.use(requestLogger);
 app.use("/", mainRouter);
 
+app.use(errorLogger);
 
-// central error handling
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
-  logger.error(err.stack || err);
+// celebrate error handler
+app.use(errors());
 
-  const status = err.statusCode || 500;
-  const message = status === 500 ? 'Internal server error' : err.message;
+// centralized error handler
+app.use(errorHandler);
 
-  return res.status(status).send({ message });
-})
 
 app.listen(PORT, () => logger.info(`Server is running on port ${PORT}.`));

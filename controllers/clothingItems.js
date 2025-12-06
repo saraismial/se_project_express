@@ -1,4 +1,5 @@
 const ClothingItem = require('../models/clothingItem');
+const { BadRequestError, ForbiddenError, NotFoundError } = require('../middlewares/error-handler');
 
 // CREATE /items
 const createItem = (req, res, next) => {
@@ -8,7 +9,7 @@ const createItem = (req, res, next) => {
     .then((item) => res.status(201).json(item))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).json({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
       return next(err);
     });
@@ -32,13 +33,13 @@ const updateItem = (req, res, next) => {
     .then((item) => res.status(200).json(item))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(400).json({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).json({ message: err.message });
+        return next(new NotFoundError('Item not found'));
       }
       if (err.name === "CastError") {
-        return res.status(400).json({ message: err.message });
+        return next(new BadRequestError('Invalid item id'));
       }
       return next(err);
     });
@@ -53,16 +54,16 @@ const deleteItem = (req, res, next) => {
     .orFail()
     .then((item) => {
       if(!item.owner.equals(req.user._id)) {
-        return res.status(403).json({ message: 'You can only delete your own items.' });
+        return next(new ForbiddenError('You can only delete your own items.'));
       }
       return item.deleteOne().then(() => res.status(200).json(item));
     })
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).json({ message: err.message });
+        return next(new NotFoundError('Item not found'));
       }
       if (err.name === "CastError") {
-        return res.status(400).json({ message: err.message });
+        return next(new BadRequestError('Invalid item id'));
       }
       return next(err);
     });
@@ -77,10 +78,10 @@ const likeItem = (req, res, next) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).json({ message: err.message });
+        return next(new NotFoundError('Item not found'));
       }
       if (err.name === "CastError") {
-        return res.status(400).json({ message: err.message });
+        return next(new BadRequestError('Invalid item id'));
       }
       return next(err);
     });
@@ -95,10 +96,10 @@ const dislikeItem = (req, res, next) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).json({ message: err.message });
+        return next(new NotFoundError('Item not found'));
       }
       if (err.name === "CastError") {
-        return res.status(400).json({ message: err.message });
+        return next(new BadRequestError('Invalid item id'));
       }
       return next(err);
     });

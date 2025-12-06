@@ -3,6 +3,8 @@ const bcrypt = require('bcryptjs');
 const User =  require('../models/user');
 const { JWT_SECRET } = require('../utils/config');
 
+const { BadRequestError, UnauthorizedError, NotFoundError, ConflictError } = require('../middlewares/error-handler');
+
 // GET /users
 const getUsers = (req, res, next) => {
   User.find({})
@@ -20,10 +22,10 @@ const getCurrentUser = (req, res, next) => {
     .then((user) => res.status(200).json(user))
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
-        return res.status(404).json({ message: 'User not found' });
+        return next(new NotFoundError('User not found'));
       }
       if (err.name === 'CastError') {
-        return res.status(400).json({ message: 'Invalid user id' });
+        return next(new BadRequestError('Invalid user id'));
       }
       return next(err);
     });
@@ -39,13 +41,13 @@ const updateUser = (req, res, next) => {
     .then((user) => res.status(200).json(user))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(400).json({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).json({ message: err.message });
+        return next(new NotFoundError('User not found'));
       }
       if (err.code === 11000) {
-        return res.status(409).json({ message: 'User with this email already exists' });
+        return next(new ConflictError('User with this email already exists'));
       }
       return next(err);
     });
@@ -68,10 +70,10 @@ const createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        return res.status(409).json({ message: 'User with this email already exists' });
+        return next(new ConflictError('User with this email already exists'));
       }
       if (err.name === 'ValidationError') {
-        return res.status(400).json({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
       return next(err);
     });
@@ -83,7 +85,7 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).send({ message: 'Email and password are required'});
+    return next(new BadRequestError('Email and password are required'));
   }
 
   return User.findUserByCredentials(email, password)
@@ -94,7 +96,7 @@ const login = (req, res, next) => {
     })
     .catch((err) => {
       if (err.message === 'Incorrect email or password') {
-        return res.status(401).send({ message: 'Incorrect email or password'  });
+        return next(new UnauthorizedError('Incorrect email or password'));
       }
       return next(err);
     })
