@@ -20,6 +20,10 @@ const validateCardBody = celebrate({
       'string.empty': 'The "imageUrl" field must be filled in',
       'string.uri': 'the "imageUrl" field must be a valid url',
     }),
+    weather: Joi.string().required().valid('hot', 'warm', 'cold').messages({
+      'string.empty': 'The "weather" field must be filled in',
+      'any.only': 'The "weather" field must be one of "hot", "warm", or "cold"',
+    }),
   }),
 });
 
@@ -66,21 +70,10 @@ const validateItemId = celebrate({
   }),
 });
 
-const validateUserId = celebrate({
-  params: Joi.object().keys({
-    userId: Joi.string().required().hex().length(24).messages({
-      'string.length': 'The "userId" param must be a 24-character hex string',
-      'string.hex': 'The "userId" param must be a valid hex string',
-      'string.empty': 'The "userId" param is required',
-    }),
-  }),
-});
-
 module.exports = {
   validateURL,
   validateCardBody,
   validateUserBody,
   validateLoginBody,
   validateItemId,
-  validateUserId,
 };

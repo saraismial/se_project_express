@@ -1,7 +1,5 @@
 const router = require('express').Router();
 
-const { validateUserId } = require('../middlewares/validation');
-
 const { getUsers, getCurrentUser, updateUser } = require('../controllers/users');
 
 router.get('/', getUsers);

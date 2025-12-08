@@ -34,12 +34,13 @@ app.use(express.json());
 // enable cross origin resource sharing
 app.use(cors());
 
-// temporary user for tests
-app.use((req, res, next) => {
-  req.user = {
-    _id: "5d8b8592978f8bd833ca8133",
-  };
-  next();
+app.use(requestLogger);
+
+// server crash testing
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Server will crash now');
+  }, 0);
 });
 
 // public routes
@@ -52,14 +53,12 @@ app.get('/items', getItems);
 // authentication
 app.use(auth);
 
-app.use(requestLogger);
+// protected routes
 app.use("/", mainRouter);
 
 app.use(errorLogger);
-
 // celebrate error handler
 app.use(errors());
-
 // centralized error handler
 app.use(errorHandler);
 

@@ -19,7 +19,7 @@ const createItem = (req, res, next) => {
 const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.status(200).json(items))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 
