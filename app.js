@@ -24,7 +24,7 @@ const { PORT = 3001 } = process.env;
 const app = express();
 
 mongoose
-  .connect('mongodb://127.0.0.1:27017/wtwr_db')
+  .connect('mongodb+srv://saraismial_db_user:T7eNvpJmGVWs78Qp@wtwr.wpjmxgh.mongodb.net/')
   .then(() => logger.info("Connected to the Database."))
   .catch((error) => logger.error(error))
 ;
