@@ -2,6 +2,9 @@
 
 This backend powers the WTWR full-stack application, providing user authentication, clothing item management, and secure access to user-specific data. It is built with Node.js, Express, MongoDB, and JWT-based authentication.
 
+- **Project Pitch**
+View the project pitch video here: https://drive.google.com/file/d/1v8bF4s4c3lOI1XExNDEvW4lfPWsw1j0h/view?usp=sharing
+
 ## Features
 
 ### User Authentication
