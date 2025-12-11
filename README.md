@@ -3,7 +3,15 @@
 This backend powers the WTWR full-stack application, providing user authentication, clothing item management, and secure access to user-specific data. It is built with Node.js, Express, MongoDB, and JWT-based authentication.
 
 - **Project Pitch**
-View the project pitch video here: https://drive.google.com/file/d/1v8bF4s4c3lOI1XExNDEvW4lfPWsw1j0h/view?usp=sharing
+View the project pitch video here: **https://drive.google.com/file/d/1v8bF4s4c3lOI1XExNDEvW4lfPWsw1j0h/view?usp=sharing**
+
+## Deployment
+
+### **Backend**
+Live API base URL: **https://api.wtwr.spacegamers.net**  
+
+### **Frontend**
+Live React application: **https://wtwr.spacegamers.net**
 
 ## Features
 
@@ -48,8 +56,6 @@ View the project pitch video here: https://drive.google.com/file/d/1v8bF4s4c3lOI
 
 `npm run dev` — to launch the server with the hot reload feature
 
-## API Endpoints
-
 ### Authentication (Public)
 
 | Method | Endpoint | Description                    |
@@ -76,7 +82,7 @@ View the project pitch video here: https://drive.google.com/file/d/1v8bF4s4c3lOI
 
 ## Frontend Repository
 
-- **Frontend:** https://github.com/saraismial/se_project_express
+- **Frontend:** https://github.com/saraismial/se_project_react
 
 ## Summary
 
