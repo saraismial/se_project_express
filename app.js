@@ -20,12 +20,16 @@ const auth = require('./middlewares/auth');
 
 const { validateUserBody, validateLoginBody } = require('./middlewares/validation');
 
-const { PORT = 3001 } = process.env;
+const {
+  PORT = 3001,
+  DB_URL = 'mongodb://127.0.0.1:27017/wtwr_db',
+  NODE_ENV = 'development'
+ } = process.env;
 const app = express();
 
 mongoose
-  .connect('mongodb://127.0.0.1:27017/wtwr_db')
-  .then(() => logger.info("Connected to the Database."))
+  .connect(DB_URL)
+  .then(() => logger.info(`Connected to the Database at ${DB_URL}.`))
   .catch((error) => logger.error(error))
 ;
 
@@ -63,4 +67,4 @@ app.use(errors());
 app.use(errorHandler);
 
 
-app.listen(PORT, () => logger.info(`Server is running on port ${PORT}.`));
+app.listen(PORT, () => logger.info(`Server is running on port ${PORT} in ${NODE_ENV} mode.`));
