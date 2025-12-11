@@ -27,6 +27,7 @@ const {
  } = process.env;
 const app = express();
 
+// connect to mongodb (local in dev, env in prod)
 mongoose
   .connect(DB_URL)
   .then(() => logger.info(`Connected to the Database at ${DB_URL}.`))

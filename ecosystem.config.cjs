@@ -1,10 +1,12 @@
+// PM2 configuration
+
 module.exports = {
   apps: [
     {
       name: 'wtwr-api',
       script: 'app.js',
       instances: 1,
-      exec_mode: 'fork',
+      exec_mode: 'cluster',
       env: {
         NODE_ENV: 'development',
         PORT: 3001,
